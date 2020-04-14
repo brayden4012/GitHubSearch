@@ -111,13 +111,25 @@ class UserDetailViewController: UIViewController {
     }
     
     private func configureViews(with user: UserResponse) {
-        self.emailLabel.text = user.email
-        self.locationLabel.text = user.location
+        if let email = user.email {
+            self.emailLabel.text = email
+        } else {
+            emailLabel.isHidden = true
+        }
+        
+        if let location = user.location {
+            self.locationLabel.text = location
+        } else {
+            locationLabel.isHidden = true
+        }
+        
         if let creationDate = user.createdAt,
             let joinDate = DateFormatter.isoDateFormatter.date(from: creationDate) {
             let components = Calendar.current.dateComponents([.month, .day, .year], from: joinDate)
             guard let month = components.month, let day = components.day, let year = components.year else { return }
-            self.joinDateLabel.text = "\(month) \(day), \(year)"
+            self.joinDateLabel.text = "Joined \(Calendar.current.shortMonthSymbols[month - 1]) \(day), \(year)"
+        } else {
+            joinDateLabel.isHidden = true
         }
         
         if let followerCount = user.followers {
@@ -125,13 +137,22 @@ class UserDetailViewController: UIViewController {
             if followerCount != 1 {
                 followerCountLabel.text?.append("s")
             }
+        } else {
+            followerCountLabel.isHidden = true
         }
         
         if let followingCount = user.following {
             self.followingCountLabel.text = "Following \(followingCount)"
+        } else {
+            followingCountLabel.isHidden = true
         }
         
-        self.biographyLabel.text = user.bio
+        if let bio = user.bio {
+            self.biographyLabel.text = bio
+        } else {
+            biographyLabel.isHidden = true
+        }
+        
     }
 }
 
@@ -145,7 +166,7 @@ extension UserDetailViewController: UISearchBarDelegate {
         }
         tableRepos = userRepos.filter { (repo) -> Bool in
             guard let name = repo.name else { return false }
-            return name.contains(searchText)
+            return name.lowercased().contains(searchText.lowercased())
         }
     }
 }
