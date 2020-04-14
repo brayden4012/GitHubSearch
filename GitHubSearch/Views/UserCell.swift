@@ -17,13 +17,22 @@ class UserCell: UITableViewCell {
     
     // MARK: - Properties
     private let userService = UserService()
+    private var task: URLSessionDataTask?
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        task?.cancel()
+        task = nil
+        profileImageView.image = nil
+    }
+    
     // MARK: - Public
     func configure(with viewModel: UserCellViewModel) {
-        if let profileUrl = viewModel.user.avatarUrl,
+        if task == nil,
+            let profileUrl = viewModel.user.avatarUrl,
             let url = URL(string: profileUrl) {
             DispatchQueue.main.async {
-                self.profileImageView.load(url: url)
+                self.task = self.profileImageView.load(url: url)
             }
         }
         

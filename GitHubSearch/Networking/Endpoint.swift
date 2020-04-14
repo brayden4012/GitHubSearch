@@ -24,7 +24,6 @@ enum Endpoint {
             } else {
                 pathName = "/users/\(username)"
             }
-            
         }
         
         return pathName
